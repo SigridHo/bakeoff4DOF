@@ -33,10 +33,6 @@ int startTime = 0; // time starts when the first click is captured
 int finishTime = 0; //records the time of the final click
 boolean userDone = false;
 
-boolean overBox = false;
-boolean locked = false;
-float xOffset = 0.0; 
-float yOffset = 0.0; 
 
 
 final int screenPPI = 72; //what is the DPI of the screen you are using 
@@ -102,15 +98,7 @@ void draw() {
   
   Target t = targets.get(trialIndex);
   
-  
-  // Test if the cursor is over the target square
-  if (mouseX > t.x-t.z/2+width/2 && mouseX < t.x+t.z/2+width/2 && 
-      mouseY > t.y-t.z/2+height/2 && mouseY < t.y+t.z/2+height/2) {
-    overBox = true;  
-  } else {
-    overBox = false;
-  }
-  
+ 
   translate(t.x, t.y); //center the drawing coordinates to the center of the screen
   translate(screenTransX, screenTransY); //center the drawing coordinates to the center of the screen
   rotate(radians(t.rotation));
@@ -138,7 +126,7 @@ void draw() {
 
 //my example design
 void scaffoldControlLogic()
-{
+{/*
   //upper left corner, rotate counterclockwise
   text("CCW", inchesToPixels(.2f), inchesToPixels(.2f));
   if (mousePressed && dist(0, 0, mouseX, mouseY)<inchesToPixels(.5f))
@@ -174,7 +162,7 @@ void scaffoldControlLogic()
   
   text("down", width/2, height-inchesToPixels(.2f));
   if (mousePressed && dist(width/2, height, mouseX, mouseY)<inchesToPixels(.5f))
-    screenTransY+=inchesToPixels(.02f);
+    screenTransY+=inchesToPixels(.02f); */
 }
 
 
@@ -184,32 +172,20 @@ void mousePressed()
     {
       startTime = millis();
       println("time started!");
-    }
-    
-    // Drag
-    if(overBox) { 
-      locked = true; 
-    } else {
-      locked = false;
-    }
-    Target t = targets.get(trialIndex);
-    xOffset = mouseX-t.x; 
-    yOffset = mouseY-t.y; 
+    } 
 }
 
-void mouseDragged() {
+void mouseClicked() {
   Target t = targets.get(trialIndex);
-  if(locked) {
-    t.x = mouseX-xOffset; 
-    t.y = mouseY-yOffset; 
-  }
+  t.x = mouseX-width/2;
+  t.y = mouseY-height/2;
 }
+
 void mouseReleased()
 {
-  locked = false;
   
   //check to see if user clicked middle of screen
-  if (dist(width/2, height/2, mouseX, mouseY)<inchesToPixels(.5f))
+  if (dist(0, 0, mouseX, mouseY)<inchesToPixels(.5f))
   {
     if (userDone==false && !checkForSuccess())
       errorCount++;
