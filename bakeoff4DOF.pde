@@ -104,8 +104,8 @@ void draw() {
   
   
   // Test if the cursor is over the target square
-  if (mouseX > t.x-2*t.z+width/2 && mouseX < t.x+2*t.z+width/2 && 
-      mouseY > t.y-2*t.z+height/2 && mouseY < t.y+2*t.z+height/2) {
+  if (mouseX > t.x-t.z/2+width/2 && mouseX < t.x+t.z/2+width/2 && 
+      mouseY > t.y-t.z/2+height/2 && mouseY < t.y+t.z/2+height/2) {
     overBox = true;  
   } else {
     overBox = false;
