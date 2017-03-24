@@ -135,12 +135,6 @@ void draw() {
   float scale_len = sqrt(2)*t.z/2;
   float scaleX = width/2+t.x+screenTransX+scale_len*sin(radians(t.rotation+45));
   float scaleY = height/2+t.y+screenTransY-scale_len*cos(radians(t.rotation+45));
-  println(mouseX);
-  println(mouseY);
-  println(scaleX);
-  println(scaleY);
-  
-  println("hey");
   if (mouseX > scaleX-offset && mouseX < scaleX+offset && 
       mouseY > scaleY-offset && mouseY < scaleY+offset) {
     overScaleCircle = true;  
@@ -162,9 +156,11 @@ void draw() {
   stroke(255);
   line(0, 0, 0, 0-screenZ-100);
   stroke(0);
+  fill(255,255,100);
+  ellipse(0,0,3,3);
   popMatrix();
-
-  scaffoldControlLogic(); //you are going to want to replace this!
+  
+ // scaffoldControlLogic(); //you are going to want to replace this!
   
   text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchesToPixels(.5f));
 }
@@ -223,6 +219,11 @@ void mousePressed()
     } else {
       rotationLocked = false;
     }
+    if(overScaleCircle) { 
+      scaleLocked = true; 
+    } else {
+      scaleLocked = false;
+    }
     
 }
 
@@ -247,10 +248,17 @@ void mouseDragged() {
       }
      t.rotation = rotationOffset;
   }
+  if(scaleLocked) {
+    Target t = targets.get(trialIndex);
+    scaleOffset = (mouseX-width/2-t.x-screenTransX) / sin(radians(t.rotation+45));
+    t.z = scaleOffset / sqrt(2) * 2;
+    t.z = max(t.z, 0);
+  }
 }
 void mouseReleased()
 {
   rotationLocked = false;
+  scaleLocked = false;
   //check to see if user clicked middle of screen
   if (dist(0, 0, mouseX, mouseY)<inchesToPixels(.5f))
   {
