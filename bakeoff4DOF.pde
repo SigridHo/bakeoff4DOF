@@ -33,7 +33,13 @@ int startTime = 0; // time starts when the first click is captured
 int finishTime = 0; //records the time of the final click
 boolean userDone = false;
 
+boolean overRotationCircle = false;
+boolean rotationLocked = false;
+float rotationOffset = 0.0;
 
+boolean overScaleCircle = false;
+boolean scaleLocked = false;
+float scaleOffset = 0.0;
 
 final int screenPPI = 72; //what is the DPI of the screen you are using 
 
@@ -105,7 +111,43 @@ void draw() {
 
   fill(255, 0, 0); //set color to semi translucent
   rect(0, 0, t.z, t.z);
-
+  stroke(255);
+  
+  // Rotation line and rotation circle
+  line(0, 0, 0, 0-t.z/2-100);
+  ellipse(0, 0-t.z/2-100, 10, 10);
+  
+  // Test if the cursor is over the rotation circle
+  float len = t.z/2+100;
+  float circleX = width/2+t.x+screenTransX+len*sin(radians(t.rotation));
+  float circleY = height/2+t.y+screenTransY-len*cos(radians(t.rotation));
+  float offset = 20;
+  if (mouseX > circleX-offset && mouseX < circleX+offset && 
+      mouseY > circleY-offset && mouseY < circleY+offset) {
+    overRotationCircle = true;  
+  } else {
+    overRotationCircle = false;
+  }
+  
+  fill(0, 255, 0);
+  ellipse(t.z/2, -t.z/2, 10, 10);
+  // Test if the cursor is over the scale circle
+  float scale_len = sqrt(2)*t.z/2;
+  float scaleX = width/2+t.x+screenTransX+scale_len*sin(radians(t.rotation+45));
+  float scaleY = height/2+t.y+screenTransY-scale_len*cos(radians(t.rotation+45));
+  println(mouseX);
+  println(mouseY);
+  println(scaleX);
+  println(scaleY);
+  
+  println("hey");
+  if (mouseX > scaleX-offset && mouseX < scaleX+offset && 
+      mouseY > scaleY-offset && mouseY < scaleY+offset) {
+    overScaleCircle = true;  
+  } else {
+    overScaleCircle = false;
+  }
+  stroke(0);
   popMatrix();
 
   //===========DRAW TARGETTING SQUARE=================
@@ -117,6 +159,9 @@ void draw() {
   //translate(screenTransX,screenTransY); //center the drawing coordinates to the center of the screen
   fill(255, 128); //set color to semi translucent
   rect(0, 0, screenZ, screenZ);
+  stroke(255);
+  line(0, 0, 0, 0-screenZ-100);
+  stroke(0);
   popMatrix();
 
   scaffoldControlLogic(); //you are going to want to replace this!
@@ -173,17 +218,39 @@ void mousePressed()
       startTime = millis();
       println("time started!");
     } 
+    if(overRotationCircle) { 
+      rotationLocked = true; 
+    } else {
+      rotationLocked = false;
+    }
+    
 }
 
 void mouseClicked() {
-  Target t = targets.get(trialIndex);
-  t.x = mouseX-width/2;
-  t.y = mouseY-height/2;
+  if (dist(0, 0, mouseX, mouseY)>inchesToPixels(.5f))
+  {
+    Target t = targets.get(trialIndex);
+    t.x = mouseX-width/2;
+    t.y = mouseY-height/2;
+  }
 }
 
+void mouseDragged() {
+  if(rotationLocked) {
+     Target t = targets.get(trialIndex);
+      float x = width/2+t.x+screenTransX;
+      float y = height/2+t.y+screenTransY;
+      float tanValue = -(mouseX-x)/(mouseY-y);
+      rotationOffset = degrees(atan(tanValue));
+      if (mouseY > y) {
+        rotationOffset += 180;
+      }
+     t.rotation = rotationOffset;
+  }
+}
 void mouseReleased()
 {
-  
+  rotationLocked = false;
   //check to see if user clicked middle of screen
   if (dist(0, 0, mouseX, mouseY)<inchesToPixels(.5f))
   {
