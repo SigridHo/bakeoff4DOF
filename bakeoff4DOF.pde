@@ -104,23 +104,59 @@ void draw() {
   
   Target t = targets.get(trialIndex);
   
- 
   translate(t.x, t.y); //center the drawing coordinates to the center of the screen
   translate(screenTransX, screenTransY); //center the drawing coordinates to the center of the screen
   rotate(radians(t.rotation));
 
   fill(255, 0, 0); //set color to semi translucent
+  // Change color for match 
+  boolean closeDist = dist(t.x,t.y,-screenTransX,-screenTransY)<inchesToPixels(.05f); //has to be within .1"
+  if (closeDist) {
+    fill(0,191,255);
+  }
+  boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation,screenRotation)<=5;
+  if (closeRotation) {
+    fill(255,228,225);
+  }
+  boolean closeZ = abs(t.z - screenZ)<inchesToPixels(.05f); //has to be within .1"  
+  if (closeZ) {
+    fill(127,255,0);
+  }
+  if (closeDist && closeRotation && closeZ) {
+    rotationLocked = false;
+    scaleLocked = false;
+    if (userDone==false && !checkForSuccess())
+      errorCount++;
+
+    //and move on to next trial
+    trialIndex++;
+
+    screenTransX = 0;
+    screenTransY = 0;
+
+    if (trialIndex==trialCount && userDone==false)
+    {
+      userDone = true;
+      finishTime = millis();
+    }
+  }
+
+
   rect(0, 0, t.z, t.z);
   stroke(255);
+  fill(148,0,211);
+  
   
   // Rotation line and rotation circle
-  line(0, 0, 0, 0-t.z/2-100);
-  ellipse(0, 0-t.z/2-100, 10, 10);
+  float len = t.z/2+100;
   
   // Test if the cursor is over the rotation circle
-  float len = t.z/2+100;
+  
   float circleX = width/2+t.x+screenTransX+len*sin(radians(t.rotation));
   float circleY = height/2+t.y+screenTransY-len*cos(radians(t.rotation));
+  
+  line(0, 0, 0, 0-len);
+  ellipse(0, 0-len, 10, 10);
   float offset = 20;
   if (mouseX > circleX-offset && mouseX < circleX+offset && 
       mouseY > circleY-offset && mouseY < circleY+offset) {
@@ -129,7 +165,7 @@ void draw() {
     overRotationCircle = false;
   }
   
-  fill(0, 255, 0);
+  fill(255,165,0);
   ellipse(t.z/2, -t.z/2, 10, 10);
   // Test if the cursor is over the scale circle
   float scale_len = sqrt(2)*t.z/2;
@@ -170,6 +206,8 @@ void draw() {
  // scaffoldControlLogic(); //you are going to want to replace this!
   
   text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchesToPixels(.5f));
+  
+  
 }
 
 //my example design
@@ -246,22 +284,24 @@ void mouseClicked() {
 }
 
 void mouseDragged() {
-  if(rotationLocked) {
-     Target t = targets.get(trialIndex);
-      float x = width/2+t.x+screenTransX;
-      float y = height/2+t.y+screenTransY;
-      float tanValue = -(mouseX-x)/(mouseY-y);
-      rotationOffset = degrees(atan(tanValue));
-      if (mouseY > y) {
-        rotationOffset += 180;
-      }
-     t.rotation = rotationOffset;
-  }
-  if(scaleLocked) {
-    Target t = targets.get(trialIndex);
-    scaleOffset = (mouseX-width/2-t.x-screenTransX) / sin(radians(t.rotation+45));
-    t.z = scaleOffset / sqrt(2) * 2;
-    t.z = max(t.z, 0);
+  if (!userDone) {
+    if(rotationLocked) {
+       Target t = targets.get(trialIndex);
+        float x = width/2+t.x+screenTransX;
+        float y = height/2+t.y+screenTransY;
+        float tanValue = -(mouseX-x)/(mouseY-y);
+        rotationOffset = degrees(atan(tanValue));
+        if (mouseY > y) {
+          rotationOffset += 180;
+        }
+       t.rotation = rotationOffset;
+    }
+    if(scaleLocked) {
+      Target t = targets.get(trialIndex);
+      scaleOffset = (mouseX-width/2-t.x-screenTransX) / sin(radians(t.rotation+45));
+      t.z = scaleOffset / sqrt(2) * 2;
+      t.z = max(t.z, 0);
+    }
   }
 }
 void mouseReleased()
