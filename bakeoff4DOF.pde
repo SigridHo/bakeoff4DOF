@@ -158,8 +158,15 @@ void draw() {
   stroke(0);
   fill(255,255,100);
   ellipse(0,0,3,3);
+  fill(255);
   popMatrix();
   
+  // Confirm to match
+  stroke(0);
+  fill(255,0);
+  rect(width/2, height-10, 200, 20);
+  fill(255);
+  text("Proceed to match", width/2, height-5);
  // scaffoldControlLogic(); //you are going to want to replace this!
   
   text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchesToPixels(.5f));
@@ -228,8 +235,10 @@ void mousePressed()
 }
 
 void mouseClicked() {
-  if (dist(0, 0, mouseX, mouseY)>inchesToPixels(.5f))
-  {
+  if (mouseX > width/2-100 && mouseX < width/2+100 && mouseY >height-20 && mouseY < height)
+  {  
+    return;
+  } else {
     Target t = targets.get(trialIndex);
     t.x = mouseX-width/2;
     t.y = mouseY-height/2;
@@ -259,8 +268,9 @@ void mouseReleased()
 {
   rotationLocked = false;
   scaleLocked = false;
-  //check to see if user clicked middle of screen
-  if (dist(0, 0, mouseX, mouseY)<inchesToPixels(.5f))
+
+  // check to see if user clicked to proceed
+  if (mouseX > width/2-100 && mouseX < width/2+100 && mouseY >height-20 && mouseY < height)
   {
     if (userDone==false && !checkForSuccess())
       errorCount++;
