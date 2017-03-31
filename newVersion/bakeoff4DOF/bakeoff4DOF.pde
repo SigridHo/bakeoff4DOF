@@ -87,12 +87,7 @@ void draw() {
   //fill(255);
   //ellipse(400, 348, 5, 5);
   
-  Target g = grays.get(trialIndex);
   
-  dist = sqrt(sq(mouseX - (g.x + 350)) + sq(mouseY - (g.y+350)));
-  float x = mouseX - (g.x+350) == 0 ? mouseX - (g.x +350) : mouseX - (g.x + 350);
-  float tan = ((mouseY - (g.y + 350) )/ x);
-  angle = degrees(atan(tan));
   
   if (userDone)
   {
@@ -103,7 +98,11 @@ void draw() {
     return;
   }
 
-  
+  Target g = grays.get(trialIndex);
+  dist = sqrt(sq(mouseX - (g.x + 350)) + sq(mouseY - (g.y+350)));
+  float x = mouseX - (g.x+350) == 0 ? mouseX - (g.x +350) : mouseX - (g.x + 350);
+  float tan = ((mouseY - (g.y + 350) )/ x);
+  angle = degrees(atan(tan));
   //===========DRAW TARGET SQUARE=================
   pushMatrix();
   translate(width/2, height/2); //center the drawing coordinates to the center of the screen
@@ -123,8 +122,25 @@ void draw() {
   translate(screenTransX, screenTransY); //center the drawing coordinates to the center of the screen
   
   rotate(radians(t.rotation));
-
   fill(255, 0, 0); //set color to semi translucent
+ /* println("!!!!");
+  println(t.x);
+  println(t.y);
+  println(g.x);
+  println(g.y);*/
+  boolean closeDist = dist(t.x,t.y,g.x,g.y)<inchesToPixels(.05f); //has to be within .1"
+  if (closeDist) {
+    fill(0,191,255);
+  }
+  boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation,screenRotation)<=5;
+  if (closeDist && closeRotation) {
+    fill(255,228,225);
+  }
+  boolean closeZ = abs(t.z - screenZ)<inchesToPixels(.05f); //has to be within .1"  
+  if (closeDist && closeRotation && closeZ) {
+    fill(127,255,0);
+  }
+  
   rect(0, 0, t.z, t.z);
   
   fill(255,255,0,100);
@@ -220,11 +236,7 @@ void mouseClicked()
 {
    Target g = grays.get(trialIndex);
    System.out.println("x: " + g.x + " y: " + g.y + " " + mouseX + " " + mouseY);
-   if(placedRed == false){
-    placedRed = true;
-  }else if(placedRed && !fix){
-    fix = true;
-  }
+   
   System.out.println(mouseX + " " + mouseY);
   //check to see if user clicked middle of screen
   //if (dist(g.x + 350 + (screenZ / 2), g.y + 350 + (screenZ / 2), mouseX, mouseY)<inchesToPixels(.5f))
@@ -247,6 +259,11 @@ void mouseClicked()
       userDone = true;
       finishTime = millis();
     }
+    if(placedRed == false){
+    placedRed = true;
+    }else if(placedRed && !fix){
+      fix = true;
+    }
     return;
   //} 
   
@@ -255,7 +272,8 @@ void mouseClicked()
 }
 
 void mouseMoved(){
-  System.out.println(placedRed);
+  //System.out.println(placedRed);
+  if (userDone) return;
   Target t = targets.get(trialIndex);
   //if(!placedRed){
   //  t.x = mouseX - width/2 - 50;
@@ -278,7 +296,9 @@ void mouseDragged(){
 public boolean checkForSuccess()
 {
 	Target t = targets.get(trialIndex);	
-	boolean closeDist = dist(t.x,t.y,-screenTransX,-screenTransY)<inchesToPixels(.05f); //has to be within .1"
+   Target g = grays.get(trialIndex);
+	//boolean closeDist = dist(t.x,t.y,-screenTransX,-screenTransY)<inchesToPixels(.05f); //has to be within .1"
+  boolean closeDist = dist(t.x,t.y,g.x,g.y)<inchesToPixels(.05f); //has to be within .1"
   boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation,screenRotation)<=5;
 	boolean closeZ = abs(t.z - screenZ)<inchesToPixels(.05f); //has to be within .1"	
 	
