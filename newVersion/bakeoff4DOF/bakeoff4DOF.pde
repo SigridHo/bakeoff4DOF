@@ -234,10 +234,10 @@ void mousePressed()
 
 void mouseClicked()
 {
-   Target g = grays.get(trialIndex);
-   System.out.println("x: " + g.x + " y: " + g.y + " " + mouseX + " " + mouseY);
+   //Target g = grays.get(trialIndex);
+   //System.out.println("x: " + g.x + " y: " + g.y + " " + mouseX + " " + mouseY);
    
-  System.out.println(mouseX + " " + mouseY);
+  //System.out.println(mouseX + " " + mouseY);
   //check to see if user clicked middle of screen
   //if (dist(g.x + 350 + (screenZ / 2), g.y + 350 + (screenZ / 2), mouseX, mouseY)<inchesToPixels(.5f))
   //{
@@ -288,7 +288,7 @@ void mouseMoved(){
 void mouseDragged(){
   Target t = targets.get(trialIndex);
 
-    t.x = mouseX - width/2 - 50;
+    t.x = mouseX - width/2;
     t.y = mouseY - height/2;
 
 }
