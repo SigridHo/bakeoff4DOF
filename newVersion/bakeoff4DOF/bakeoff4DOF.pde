@@ -99,15 +99,17 @@ void draw() {
   }
 
   Target g = grays.get(trialIndex);
-  dist = sqrt(sq(mouseX - (g.x + 350)) + sq(mouseY - (g.y+350)));
-  float x = mouseX - (g.x+350) == 0 ? mouseX - (g.x +350) : mouseX - (g.x + 350);
-  float tan = ((mouseY - (g.y + 350) )/ x);
+  Target t = targets.get(trialIndex);
+  
+  dist = sqrt(sq(mouseX - (t.x + 350)) + sq(mouseY - (t.y+350)));
+  float x = mouseX - (t.x+350) == 0 ? mouseX - (t.x +350) : mouseX - (t.x + 350);
+  float tan = ((mouseY - (t.y + 350) )/ x);
   angle = degrees(atan(tan));
   //===========DRAW TARGET SQUARE=================
   pushMatrix();
   translate(width/2, height/2); //center the drawing coordinates to the center of the screen
 
-  Target t = targets.get(trialIndex);
+  //Target t = targets.get(trialIndex);
   
   //if(!placedRed){
   //  t.x = mouseX - width/2 - 50;
