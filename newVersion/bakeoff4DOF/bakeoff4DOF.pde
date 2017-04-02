@@ -62,8 +62,10 @@ void setup() {
     t.rotation = random(0, 360); //random rotation between 0 and 360
     int j = (int)random(20);
     t.z = ((j%20)+1)*inchesToPixels(.15f); //increasing size from .15 up to 3.0" 
-    g.x = random(-width/2+border*10, width/2-border*10);
-    g.y = random(-height/2+border*10, height/2-border*10);
+    //g.x = random(-width/2+border*10, width/2-border*10);
+    //g.y = random(-height/2+border*10, height/2-border*10);
+    g.x=0;
+    g.y=0;
     g.rotation = 0;
     g.z = 10;
     targets.add(t);
