@@ -23,7 +23,13 @@ boolean inScale = false;
 boolean fixRotation = false;
 boolean fix = false;
 float dist = 0;
-float angle = 0; 
+float angle0 = 0;
+float angle1 = 0;
+float angleOffset = 0;
+float a = 0;
+float r = 50;
+float xMark = 0;
+float yMark = 0;
 
 final int screenPPI = 72; //what is the DPI of the screen you are using 
 
@@ -62,12 +68,20 @@ void setup() {
     t.rotation = random(0, 360); //random rotation between 0 and 360
     int j = (int)random(20);
     t.z = ((j%20)+1)*inchesToPixels(.15f); //increasing size from .15 up to 3.0" 
-    g.x = random(-width/2+border*10, width/2-border*10);
-    g.y = random(-height/2+border*10, height/2-border*10);
+    //g.x = random(-width/2+border*10, width/2-border*10);
+    //g.y = random(-height/2+border*10, height/2-border*10);
+    g.x = 0;
+    g.y=0;
     g.rotation = 0;
     g.z = 10;
     targets.add(t);
     grays.add(g);
+    if (i == 0) {
+      float div = floor(t.rotation / 90);
+      a = 90 - (t.rotation - div * 90);
+      xMark = r*cos(radians(a));
+      yMark = r*sin(radians(a));
+    }
     println("created target with " + t.x + "," + t.y + "," + t.rotation + "," + t.z);
   }
 
@@ -102,9 +116,8 @@ void draw() {
   Target t = targets.get(trialIndex);
   
   dist = sqrt(sq(mouseX - (t.x + 350)) + sq(mouseY - (t.y+350)));
-  float x = mouseX - (t.x+350) == 0 ? mouseX - (t.x +350) : mouseX - (t.x + 350);
-  float tan = ((mouseY - (t.y + 350) )/ x);
-  angle = degrees(atan(tan));
+  
+  
   //===========DRAW TARGET SQUARE=================
   pushMatrix();
   translate(width/2, height/2); //center the drawing coordinates to the center of the screen
@@ -166,8 +179,13 @@ void draw() {
   fill(255,255,0,100);
   stroke(1);
   ellipse(g.x, g.y, 25, 25);
+  
+  fill(255, 255, 0);
+  ellipse(xMark, yMark, 5,5);
+  
   fill(255);
   ellipse(g.x + screenZ, g.y, 5, 5);
+ 
   popMatrix();
 
   //scaffoldControlLogic(); //you are going to want to replace this!
@@ -261,10 +279,20 @@ void mouseClicked()
       {
         userDone = true;
         finishTime = millis();
+      } else {
+        Target t = targets.get(trialIndex);
+        float div = floor(t.rotation / 90);
+        a = 90 - (t.rotation - div * 90);
+        xMark = r*cos(radians(a));
+        yMark = r*sin(radians(a));
       }
       
     }else if(placedRed == false){
     placedRed = true;
+    Target t = targets.get(trialIndex);
+    float x0 = mouseX - (t.x+350) == 0 ? mouseX - (t.x +350) : mouseX - (t.x + 350);
+    float tan0 = ((pmouseY - (t.y + 350) )/ x0);
+    angle0 = degrees(atan(tan0));
     }else if(placedRed && !fix){
       fix = true;
     }
@@ -283,7 +311,16 @@ void mouseMoved(){
     t.x = mouseX - width/2 - 50;
     t.y = mouseY - height/2;
   }else if(!fix){
-    t.rotation = angle;
+    //t.rotation = angle;
+    float x = mouseX - (t.x+350) == 0 ? mouseX - (t.x +350) : mouseX - (t.x + 350);
+    float tan = ((mouseY - (t.y + 350) )/ x);
+    angle1 = degrees(atan(tan));
+    angleOffset = angle1 - angle0;
+    angle0=angle1;
+    t.rotation += angleOffset;
+    println(t.rotation);
+    println(a);
+    println("#");
     t.z = dist;
   }
 }
