@@ -299,11 +299,12 @@ void mouseClicked()
       
     }else if(placedRed == false){
     placedRed = true;
+    if (!userDone) {
     Target t = targets.get(trialIndex);
     float x0 = mouseX - (t.x+350) == 0 ? mouseX - (t.x +350) : mouseX - (t.x + 350);
     float tan0 = ((mouseY - (t.y + 350) )/ x0);
     angle0 = degrees(atan(tan0));
-    dist0 = sqrt(sq(mouseX - (t.x + 350)) + sq(mouseY - (t.y+350)));
+    dist0 = sqrt(sq(mouseX - (t.x + 350)) + sq(mouseY - (t.y+350)));}
     }else if(placedRed && !fix){
       fix = true;
     }
