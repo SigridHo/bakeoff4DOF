@@ -9,7 +9,7 @@ float screenTransY = 0;
 float screenRotation = 0;
 float screenZ = 50f;
 
-int trialCount = 8; //this will be set higher for the bakeoff
+int trialCount = 15; //this will be set higher for the bakeoff
 float border = 0; //have some padding from the sides
 int trialIndex = 0; //what trial are we on
 int errorCount = 0;  //used to keep track of errors
@@ -33,6 +33,7 @@ float r = screenZ;
 float xMark = r*cos(radians(a));
 float yMark = r*sin(radians(a));
 float offset = 150f;
+boolean snap = false;
 
 final int screenPPI = 72; //what is the DPI of the screen you are using 
 
@@ -278,6 +279,7 @@ void mouseClicked()
       trialIndex++;
       placedRed = false;
       fix = false;
+      snap = false;
       
   
       screenTransX = 0;
@@ -320,8 +322,7 @@ void mouseMoved(){
   if (userDone) return;
   Target t = targets.get(trialIndex);
   if(!placedRed){
-    t.x = mouseX - width/2 - offset;
-    t.y = mouseY - height/2;
+    
   }else if(!fix){
     //t.rotation = angle;
     float x = mouseX - (t.x+350) == 0 ? mouseX - (t.x +350) : mouseX - (t.x + 350);
@@ -342,6 +343,16 @@ void mouseMoved(){
     println(screenZ);
     println("##");*/
   }
+  boolean mx = mouseX < t.x + 350 + t.z/2 && mouseX >= t.x +350 - t.z/2;
+  boolean my = mouseY < t.y + 350 + t.z/2 && mouseY >= t.y + 350 - t.z/2;
+  if(snap && !placedRed){
+    t.x = mouseX - width/2 - offset;
+    t.y = mouseY - height/2;
+  }else if(!snap && mx && my){
+    System.out.println("snapping");
+    snap = true;
+  }
+    
 }
 /*
 void mouseDragged(){
